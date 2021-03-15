@@ -11,22 +11,24 @@ ROOT = Path(__file__).resolve().parents[0]
 
 def stewies_angry(tweets_file):
     
-    pics_ = os.listdir(os.getcwd()+"/src/stewie_pics/")
+    pics_ = os.listdir(ROOT / "stewie_pics/")
     picture = random.choice(pics_)
-    my_image = Image.open(os.getcwd() + "/src/stewie_pics/" + picture)
-    title_font = ImageFont.truetype(os.getcwd() + "/src/Roboto-Bold.ttf", 22)
+    my_image = Image.open(ROOT / "stewie_pics" / picture)
+    max_size = (530,530)
+    my_image.thumbnail(max_size)
+    title_font = ImageFont.truetype(str(ROOT.joinpath("Roboto_Bold.ttf")), 18)
     
-    with open(os.getcwd() + "/src/stewie_angry.csv", newline='') as quote:
+    with open(ROOT / "stewie_angry.csv", newline='') as quote:
         reader = csv.reader(quote)
         angry = list(reader)
-    with open(os.getcwd() + "/src/excluded.csv", newline='') as quote:
+    with open(ROOT / "excluded.csv", newline='') as quote:
         reader = csv.reader(quote)
         excluded = list(reader)
     
     insults = [insult for insult in angry if insult not in excluded]
     choosed = random.choice(insults)
 
-    with open(os.getcwd() + "/src/excluded.csv", "a", newline='') as f:
+    with open(ROOT / "excluded.csv", "a", newline='') as f:
         writer = csv.writer(f)
         writer.writerow(choosed)
     
@@ -43,12 +45,12 @@ def stewies_angry(tweets_file):
     image_editable = ImageDraw.Draw(my_image)
     image_editable.text((25,20), text=title_text1, fill=(40, 46, 46), font=title_font)
     image_editable.text((65,60), text=title_text2, fill=(40, 46, 46), font=title_font)
-    final_pic = my_image.save(os.getcwd() + "/src/result.jpg")
+    final_pic = my_image.save(ROOT / "result.jpg")
     
-    if len(excluded) == (len(angry)-1):
-        os.remove(os.getcwd() + "/src/excluded.csv")
-
-
+    if len(excluded) == (len(angry)-5):
+        with open(ROOT / "excluded.csv", "a", newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(choosed)
 
 def lambda_handler(event, context):
     print("Get credentials")
